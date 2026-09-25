@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const REPO = 'https://github.com/wample0105/apo-once-glance';
+const DL_DESKTOP = `${REPO}/releases/latest/download/onceglance-desktop-windows-x64.zip`;
 const INSTALL_CMD =
   'curl -fsSL --retry 3 https://github.com/wample0105/apo-once-glance/releases/latest/download/install.sh | bash';
 
@@ -41,12 +42,21 @@ const clients = [
           </div>
         </div>
         <div class="block-body">
-          <a class="btn btn-primary" href={`${REPO}/releases`} target="_blank" rel="noopener noreferrer">
-            前往 Releases 下载
-          </a>
+          <div class="dl-actions">
+            <a class="btn btn-primary" href={DL_DESKTOP}>直接下载 Windows 客户端</a>
+            <a
+              class="btn btn-ghost"
+              href={`${REPO}/releases`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              前往 Releases 页
+            </a>
+          </div>
           <p class="note">
-            下载最新的 <code>onceglance</code> 客户端安装包，<strong>解压即用</strong>，无需安装器。
-            需要 WebView2 Runtime（Windows 11 自带）。
+            按钮始终下载<strong>最新版</strong> <code>onceglance-desktop-windows-x64.zip</code>（约
+            2.8 MB），<strong>解压即用</strong>，无需安装器。需要 WebView2
+            Runtime（Windows 11 自带）。校验和与历史版本见 Releases 页。
           </p>
         </div>
       </article>
@@ -214,6 +224,12 @@ const clients = [
     margin-top: 14px;
     font-size: 14.5px;
     color: var(--text-secondary);
+  }
+
+  .dl-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
   }
 
   .note a {

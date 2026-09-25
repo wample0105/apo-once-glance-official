@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const REPO = 'https://github.com/wample0105/apo-once-glance';
+const DL_DESKTOP = `${REPO}/releases/latest/download/onceglance-desktop-windows-x64.zip`;
 const INSTALL_CMD =
   'curl -fsSL --retry 3 https://github.com/wample0105/apo-once-glance/releases/latest/download/install.sh | bash';
 
@@ -92,13 +93,16 @@ const jsonld = JSON.stringify({
         定影是一款 AI 原生截图工具。对人，它是键盘手感极佳的截图+贴图工具；对 Agent，它是本机视觉能力的标准出口。全程本地运行：零 API Key、零云端上传、零遥测。
       </p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="/download">下载 Windows 客户端</a>
+        <a class="btn btn-primary" href={DL_DESKTOP}>下载 Windows 客户端</a>
         <div class="install-chip" role="group" aria-label="一键安装命令">
           <code>{INSTALL_CMD}</code>
           <button class="copy-btn" data-copy={INSTALL_CMD} aria-label="复制安装命令">复制</button>
         </div>
       </div>
-      <p class="hero-meta">v0.1.1 · Windows 10 (19045+) / 11 · 解压即用 · MIT 开源</p>
+      <p class="hero-meta">
+        v0.1.1 · Windows 10 (19045+) / 11 · 解压即用 · MIT 开源 ·
+        <a href={`${REPO}/releases`} target="_blank" rel="noopener noreferrer">全部版本与更新日志</a>
+      </p>
 
       {/* —— 取景层视觉：产品签名瞬间 —— */}
       <div class="viewfinder" aria-hidden="true">
@@ -399,6 +403,10 @@ const jsonld = JSON.stringify({
   .hero-meta {
     font-size: 13px;
     color: var(--text-tertiary);
+  }
+
+  .hero-meta a {
+    color: var(--text-secondary);
   }
 
   @media (max-width: 720px) {

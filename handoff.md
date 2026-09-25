@@ -72,6 +72,7 @@
 - **未完成**：无（官网已上线）。
 - **上线记录（2026-09-25）**：用户经 Cloudflare 仪表盘自行完成部署（新版控制台默认引导 Workers 静态资产路径，Pages 入口较深；用户最终找到 Pages 并部署），自定义域名 `onceglance.weipo.top` 绑定成功。线上验收通过：全部页面 200、404 返回自定义页、HTTP→HTTPS 301 正常、sitemap/robots/OG 图可达、桌面端首页与文档章节页渲染正常。
 - **注意事项**：若同一仓库同时存在 Workers 与 Pages 两个项目，需只保留一个绑定 `onceglance.weipo.top`，另一个删除或解绑，避免 DNS 与自动构建混乱。
+- **下载按钮改直连（2026-09-25，用户提出并确认）**：首页与下载页的主按钮改为 GitHub 最新资产直链 `releases/latest/download/onceglance-desktop-windows-x64.zip`（点击直接下载，不再跳转 Releases 页，业界通行做法）；Releases 页降为次级入口（首页 hero-meta 文字链 + 下载页 ghost 按钮）。资产文件名不含版本号，直链永远指向最新 release。**注意**：页面上的「v0.1.1」文案是静态的，发新版本后需同步更新首页/下载页的版本号文案。
 - **待办（部署前）**：
   1. 确定正式域名 → 替换 `astro.config.mjs` 的 `site` 与 `public/robots.txt` 的 Sitemap 行（两处有 TODO 注释）→ 重新 `npm run build`；
   2. 推送 GitHub 仓库并接 Cloudflare Pages（构建命令 `npm run build`，输出目录 `dist`）；
