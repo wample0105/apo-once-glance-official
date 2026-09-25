@@ -66,7 +66,9 @@
 
 ### 当前状态与未完成事项
 
-- **状态**：官网 v1 全部页面开发完成、构建通过、多视口验收通过；已在本地 git 提交（`f43d715`，分支 main）。**未推送远程、未部署**（均需用户同意后执行）。
+- **状态**：官网 v1 全部页面开发完成、构建通过、多视口验收通过；已在本地 git 提交（`f43d715`，分支 main）。
+- **远程仓库（2026-09-25 经用户授权后创建并推送）**：https://github.com/wample0105/apo-once-glance-official （public，main 分支，gh CLI 操作）。
+- **未完成**：尚未部署 Cloudflare Pages（需用户同意后执行）。
 - **待办（部署前）**：
   1. 确定正式域名 → 替换 `astro.config.mjs` 的 `site` 与 `public/robots.txt` 的 Sitemap 行（两处有 TODO 注释）→ 重新 `npm run build`；
   2. 推送 GitHub 仓库并接 Cloudflare Pages（构建命令 `npm run build`，输出目录 `dist`）；
