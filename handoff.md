@@ -69,7 +69,9 @@
 - **状态**：官网 v1 全部页面开发完成、构建通过、多视口验收通过；已在本地 git 提交（`f43d715`，分支 main）。
 - **远程仓库（2026-09-25 经用户授权后创建并推送）**：https://github.com/wample0105/apo-once-glance-official （public，main 分支，gh CLI 操作）。
 - **正式域名（2026-09-25 用户提供）**：`https://onceglance.weipo.top`，已替换 astro.config.mjs 的 site 与 public/robots.txt 的 Sitemap 行，重新构建后 sitemap/canonical/OG 均已生效。
-- **未完成**：尚未部署 Cloudflare Pages（需用户同意后执行）；Cloudflare 侧需绑定自定义域名 onceglance.weipo.top 并配置 DNS CNAME 指向 Pages 默认域名（如 apo-once-glance-official.pages.dev）。
+- **未完成**：无（官网已上线）。
+- **上线记录（2026-09-25）**：用户经 Cloudflare 仪表盘自行完成部署（新版控制台默认引导 Workers 静态资产路径，Pages 入口较深；用户最终找到 Pages 并部署），自定义域名 `onceglance.weipo.top` 绑定成功。线上验收通过：全部页面 200、404 返回自定义页、HTTP→HTTPS 301 正常、sitemap/robots/OG 图可达、桌面端首页与文档章节页渲染正常。
+- **注意事项**：若同一仓库同时存在 Workers 与 Pages 两个项目，需只保留一个绑定 `onceglance.weipo.top`，另一个删除或解绑，避免 DNS 与自动构建混乱。
 - **待办（部署前）**：
   1. 确定正式域名 → 替换 `astro.config.mjs` 的 `site` 与 `public/robots.txt` 的 Sitemap 行（两处有 TODO 注释）→ 重新 `npm run build`；
   2. 推送 GitHub 仓库并接 Cloudflare Pages（构建命令 `npm run build`，输出目录 `dist`）；
