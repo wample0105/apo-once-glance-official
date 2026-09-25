@@ -1,0 +1,238 @@
+/* ============================================================
+   定影 OnceGlance 官网 · 全局样式
+   设计令牌来源：主项目 docs/ui-design.md v1.2（口径同源）
+   基调：亮工作台 / 暗取景；定影红只做点睛，不大面积铺色
+   ============================================================ */
+
+:root {
+  /* —— 品牌色（ui-design.md 3.1）—— */
+  --accent: #ff3b30;
+  --accent-hover: #e5352b;
+  --accent-bg: #ffe9e6;
+  --accent-text: #b3271c;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --border: #e5e5ea;
+  --border-strong: #d6d6db;
+  --text-primary: #1c1c1e;
+  --text-secondary: #55555a;
+  --text-tertiary: #8e8e93;
+  --success: #1d9e75;
+
+  /* —— 覆盖层（暗取景）专用 —— */
+  --ov-bg: #141416;
+  --ov-surface: #1d1d21;
+  --ov-surface-2: #26262b;
+  --ov-border: rgba(255, 255, 255, 0.13);
+  --ov-fg: #f5f5f7;
+  --ov-fg-dim: rgba(245, 245, 247, 0.62);
+
+  /* —— 字体 —— */
+  --font-sans: -apple-system, 'Segoe UI', 'Microsoft YaHei UI', 'Microsoft YaHei',
+    'PingFang SC', 'Noto Sans SC', sans-serif;
+  --font-mono: 'Cascadia Code', Consolas, 'SF Mono', Menlo, monospace;
+
+  /* —— 布局 —— */
+  --container: 1080px;
+  --container-wide: 1200px;
+  --radius-card: 12px;
+  --radius-btn: 8px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------- 通用容器 ---------- */
+
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.container-wide {
+  max-width: var(--container-wide);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ---------- 按钮 ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-btn);
+  border: 1px solid transparent;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+}
+
+.btn-ghost {
+  background: var(--bg-primary);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.btn-ghost:hover {
+  border-color: var(--text-tertiary);
+}
+
+.btn-sm {
+  padding: 7px 16px;
+  font-size: 13.5px;
+}
+
+/* ---------- 键帽 ---------- */
+
+.kbd {
+  display: inline-block;
+  padding: 1px 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.dark .kbd {
+  background: var(--ov-surface-2);
+  border-color: rgba(255, 255, 255, 0.22);
+  border-bottom-width: 2px;
+  color: var(--ov-fg);
+}
+
+/* ---------- 行内代码 ---------- */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+}
+
+/* ---------- 区块标题 ---------- */
+
+.section-head {
+  max-width: 640px;
+  margin-bottom: 48px;
+}
+
+.section-head h2 {
+  font-size: clamp(24px, 3.2vw, 32px);
+  margin-bottom: 12px;
+}
+
+.section-head p {
+  color: var(--text-secondary);
+  font-size: 16.5px;
+}
+
+.section {
+  padding: 96px 0;
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding: 64px 0;
+  }
+}
+
+/* ---------- 跳转链接（无障碍） ---------- */
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -48px;
+  z-index: 100;
+  padding: 8px 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 12px;
+}

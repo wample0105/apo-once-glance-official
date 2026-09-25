@@ -1,0 +1,66 @@
+---
+import { getCollection, render } from 'astro:content';
+import DocLayout from '../../layouts/DocLayout.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('docs');
+  const sorted = entries.sort((a, b) => a.data.order - b.data.order);
+  return sorted.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      prev: i > 0 ? sorted[i - 1] : null,
+      next: i < sorted.length - 1 ? sorted[i + 1] : null,
+    },
+  }));
+}
+
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+
+const badge = (n: number) => (n >= 10 ? '' : String(n).padStart(2, '0'));
+---
+
+<DocLayout
+  title={`${entry.data.title} · 定影使用教程`}
+  description={entry.data.description ?? '定影 OnceGlance 官方使用教程'}
+  activeId={entry.id}
+  prev={prev ? { href: `/docs/${prev.id}`, title: prev.data.title } : null}
+  next={next ? { href: `/docs/${next.id}`, title: next.data.title } : null}
+>
+  {
+    entry.data.order < 10 && (
+      <p class="chapter-no" aria-hidden="true">
+        第 {badge(entry.data.order)} 章
+      </p>
+    )
+  }
+  <h1 class="doc-title">{entry.data.title}</h1>
+  {
+    entry.data.description && <p class="doc-desc">{entry.data.description}</p>
+  }
+  <Content />
+</DocLayout>
+
+<style>
+  .chapter-no {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent-text);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+
+  .doc-title {
+    font-size: clamp(28px, 3.6vw, 36px);
+    margin-bottom: 10px;
+  }
+
+  .doc-desc {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 34px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+  }
+</style>

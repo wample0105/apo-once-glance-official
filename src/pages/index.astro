@@ -1,0 +1,944 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const REPO = 'https://github.com/wample0105/apo-once-glance';
+const INSTALL_CMD =
+  'curl -fsSL --retry 3 https://github.com/wample0105/apo-once-glance/releases/latest/download/install.sh | bash';
+
+const features = [
+  {
+    title: '智能截图',
+    desc: '区域框选（窗口/控件自动识别高亮）、窗口截图、全屏、多显示器物理像素支持。冻结式取景层预驻留，热键到蒙版约 44ms。',
+    img: '/manual/images/02-overlay.png',
+    alt: '取景层：自动识别框与放大镜',
+  },
+  {
+    title: '专业标注',
+    desc: '箭头/矩形/椭圆/序号/文字/高亮/马赛克/裁剪，8 个键盘快捷键 + 撤销。保存走确定性渲染引擎，衍生图永不覆盖原图。',
+    img: '/manual/images/03-editor.png',
+    alt: '标注编辑器：暗色工具栏、序号与箭头标注',
+  },
+  {
+    title: '本地 OCR',
+    desc: 'Windows.Media.Ocr 引擎离线取字，输出文字块 + 坐标框 + 置信度，不联网。',
+  },
+  {
+    title: '长截图',
+    desc: '滚轮穿透采集，帧稳定检测消除动画重影，自动接缝拼接。',
+  },
+  {
+    title: '贴图',
+    desc: '截图原位贴回屏幕，拖动、滚轮缩放、透明度调节。',
+  },
+];
+
+const searchChips = ['kind:window', 'after:昨天', 'has:annotated', 'ocr:发票'];
+
+// 终端示例：花括号在 Astro 模板中会被当表达式，故以前置字符串 + set:html 输出
+const termHtml = [
+  '<span class="t-dim"># 截前台窗口，JSON 输出</span>\n$ once capture window --json\n{ <span class="t-key">"ok"</span>: true, <span class="t-key">"data"</span>: { <span class="t-key">"path"</span>: <span class="t-str">"…0925-1530.png"</span> } }',
+  '',
+  '<span class="t-dim"># 取字：文字块 + 坐标</span>\n$ once ocr last --json\n{ <span class="t-key">"ok"</span>: true, <span class="t-key">"blocks"</span>: [ … ] }',
+  '',
+  '<span class="t-dim"># 指令驱动标注</span>\n$ once annotate last --script s.json --out r.png',
+].join('\n');
+
+const faqs = [
+  {
+    q: '截图整体发白、像曝光过度？',
+    a: '系统开启了 HDR。HDR 下 Windows 桌面以高亮度范围合成，传统截图接口拿到的是亮度映射后的降维帧。解决：设置 → 系统 → 屏幕 → HDR → 关闭「使用 HDR」。',
+  },
+  {
+    q: '客户端没打开，Agent 能调用吗？',
+    a: '能。CLI/MCP 与 GUI 是同一内核的独立入口，截图/取字/标注/历史检索均不依赖客户端运行；仅交互式框选与长截图需要 GUI。',
+  },
+  {
+    q: '隐私黑名单拦不住手动框选？',
+    a: '黑名单针对 Agent 自动截图与热键直采（你不在场的场景）；手动框选是你本人在场的主动行为，与其他工具行为一致。',
+  },
+  {
+    q: '衍生图会覆盖原图吗？',
+    a: '永远不会。所有标注/裁剪产物按 -ann 命名并记录 lineage manifest；删除只进系统回收站。',
+  },
+];
+
+const jsonld = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: '定影 OnceGlance',
+  applicationCategory: 'UtilitiesApplication',
+  operatingSystem: 'Windows 10 (19045+) / Windows 11',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'CNY' },
+  license: `${REPO}/blob/main/LICENSE`,
+  downloadUrl: `${REPO}/releases`,
+  description:
+    'AI 原生 Windows 截图工具：截图、标注、OCR 取字、长截图、贴图，并可接入 Claude/Cursor 等 Agent 完成自动截图与取字。本地运行，零云端上传。',
+});
+---
+
+<BaseLayout
+  title="定影 OnceGlance · AI 原生截图工具，让 Agent 看见你的屏幕"
+  description="AI 原生 Windows 截图工具：截图标注、本地 OCR、长截图、贴图。可接入 Claude / Cursor 等 Agent 完成自动截图取字。零 API Key、零云端上传、零遥测。"
+>
+  <script slot="head" type="application/ld+json" set:html={jsonld} />
+
+  {/* ---------- 首屏 ---------- */}
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-title">
+        让 Agent 看见你的屏幕<br />替你把操作变成教程
+      </h1>
+      <p class="hero-sub">
+        定影是一款 AI 原生截图工具。对人，它是键盘手感极佳的截图+贴图工具；对 Agent，它是本机视觉能力的标准出口。全程本地运行：零 API Key、零云端上传、零遥测。
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="/download">下载 Windows 客户端</a>
+        <div class="install-chip" role="group" aria-label="一键安装命令">
+          <code>{INSTALL_CMD}</code>
+          <button class="copy-btn" data-copy={INSTALL_CMD} aria-label="复制安装命令">复制</button>
+        </div>
+      </div>
+      <p class="hero-meta">v0.1.1 · Windows 10 (19045+) / 11 · 解压即用 · MIT 开源</p>
+
+      {/* —— 取景层视觉：产品签名瞬间 —— */}
+      <div class="viewfinder" aria-hidden="true">
+        <div class="dim-tag">1163 × 844</div>
+        <div class="selection">
+          <img src="/manual/images/01-home-ann.png" alt="" width="1163" height="844" loading="eager" />
+          <span class="handle tl"></span>
+          <span class="handle tr"></span>
+          <span class="handle bl"></span>
+          <span class="handle br"></span>
+        </div>
+        <div class="action-bar">
+          <span class="ab primary">复制</span>
+          <span class="ab">取字</span>
+          <span class="ab">标注</span>
+          <span class="ab">长截图</span>
+          <span class="esc">Esc 取消</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- 三分钟上手 ---------- */}
+  <section class="section quickstart">
+    <div class="container">
+      <div class="section-head">
+        <h2>三分钟，你已经会用定影了</h2>
+        <p>装好客户端后，你只需要记住一个键。</p>
+      </div>
+      <ol class="steps">
+        <li>
+          <span class="step-no" aria-hidden="true">1</span>
+          <p>按 <span class="kbd">Alt+Shift+A</span>，屏幕定格、变暗</p>
+        </li>
+        <li>
+          <span class="step-no" aria-hidden="true">2</span>
+          <p>在想要的位置按下鼠标左键，拖出一个框，松手</p>
+        </li>
+        <li>
+          <span class="step-no" aria-hidden="true">3</span>
+          <p>按 <span class="kbd">Enter</span>，截图已复制到剪贴板</p>
+        </li>
+        <li>
+          <span class="step-no" aria-hidden="true">4</span>
+          <p>到微信、Word 里按 <span class="kbd">Ctrl+V</span>，完成</p>
+        </li>
+      </ol>
+      <p class="qs-more">
+        剩下的都是让这件事更快、更好看、更自动的技巧——见<a href="/docs">官方使用教程</a>。
+      </p>
+    </div>
+  </section>
+
+  {/* ---------- 核心功能 ---------- */}
+  <section class="section features" id="features">
+    <div class="container">
+      <div class="section-head">
+        <h2>给人用的部分，先做到顺手</h2>
+        <p>截图、标注、取字、长图、贴图、历史——每一天都要用的动作，一个不缺。</p>
+      </div>
+      <div class="bento">
+        {
+          features.map((f) => (
+            <article class:list={['cell', { wide: !!f.img }]}>
+              <h3>{f.title}</h3>
+              <p>{f.desc}</p>
+              {f.img && <img src={f.img} alt={f.alt} loading="lazy" width="1163" height="844" />}
+            </article>
+          ))
+        }
+        <article class="cell full">
+          <h3>历史与检索</h3>
+          <p>每张截图自动入库，OCR 全文可搜，原图与衍生图连成版本链。</p>
+          <div class="search-chips" aria-label="搜索语法示例">
+            {searchChips.map((c) => (
+              <code>{c}</code>
+            ))}
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- Agent 能力（暗取景区） ---------- */}
+  <section class="section agent dark" id="agent">
+    <div class="container">
+      <div class="agent-grid">
+        <div class="agent-copy">
+          <h2>不只给人用，<br />更是 Agent 的眼睛</h2>
+          <p class="lead">
+            任何支持 MCP 或 Shell 的 Agent（Claude、Codex、Cursor 等）都能通过标准化接口，完成「截屏 → 取字 → 标注 → 落盘」的完整感知链路。
+          </p>
+          <ul class="agent-points">
+            <li>
+              <strong>三端同源</strong>
+              <span>GUI、CLI、MCP 共享同一内核，装一次客户端，三种用法。</span>
+            </li>
+            <li>
+              <strong>不依赖常驻</strong>
+              <span>客户端没有打开时，Agent 依然可以独立调用截图、取字与标注。</span>
+            </li>
+            <li>
+              <strong>标注继承你的主题</strong>
+              <span>Agent 画图不自带样式，你平时怎么标，AI 就怎么标。</span>
+            </li>
+          </ul>
+          <div class="mcp-chips" aria-label="MCP 工具">
+            <span class="mcp-label">MCP</span>
+            {['capture_screen', 'ocr_image', 'annotate_image', 'list_history', 'doctor'].map(
+              (t) => (
+                <code>{t}</code>
+              )
+            )}
+          </div>
+          <a class="agent-link" href="/docs/agent">查看接入指南 →</a>
+        </div>
+
+        <div class="terminal" role="img" aria-label="once 命令行示例">
+          <div class="term-bar">once — 命令行</div>
+          <pre class="term-body"><code set:html={termHtml} /></pre>
+        </div>
+      </div>
+      <p class="agent-note">
+        全部命令输出统一 JSON envelope（ok / data / error / meta），退出码冻结：0 成功、1 参数、2 捕获、3 OCR、4 读写、5 权限、6 黑名单。
+      </p>
+    </div>
+  </section>
+
+  {/* ---------- 隐私防线 ---------- */}
+  <section class="section privacy" id="privacy">
+    <div class="container">
+      <div class="privacy-grid">
+        <div>
+          <div class="section-head">
+            <h2>隐私是防线，不是口号</h2>
+            <p>OCR 全程本地运行，不上传任何图片与文字。</p>
+          </div>
+          <div class="zero-chips">
+            <span class="zero">零 API Key</span>
+            <span class="zero">零云端上传</span>
+            <span class="zero">零遥测</span>
+          </div>
+        </div>
+        <ul class="defense">
+          <li>
+            <strong>Agent 总开关</strong>
+            <span>一键切断所有 AI 调用，关闭即全拒。</span>
+          </li>
+          <li>
+            <strong>无感自动截图开关</strong>
+            <span>后台静默采集单独管控，默认你来定。</span>
+          </li>
+          <li>
+            <strong>隐私 App 黑名单</strong>
+            <span>密码管理器、银行类应用命中即拒，没有「本次放行」。</span>
+          </li>
+          <li>
+            <strong>元数据审计日志</strong>
+            <span>Agent 做了什么全程留痕，30 天自动清理。</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {/* ---------- FAQ ---------- */}
+  <section class="section faq" id="faq">
+    <div class="container container-narrow">
+      <div class="section-head">
+        <h2>常见问题</h2>
+      </div>
+      {
+        faqs.map(({ q, a }) => (
+          <details class="faq-item">
+            <summary>{q}</summary>
+            <p>{a}</p>
+          </details>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ---------- 交流与支持 ---------- */}
+  <section class="section cta">
+    <div class="container">
+      <div class="section-head">
+        <h2>关注与交流</h2>
+        <p>定影对你有帮助的话，欢迎关注更新、加入交流群，或者请作者喝杯咖啡。</p>
+      </div>
+      <div class="qr-row">
+        <figure>
+          <img src="/brand/qr-gzh.png" alt="阿坡RPA 公众号二维码" loading="lazy" width="180" height="180" />
+          <figcaption>
+            <strong>关注公众号「阿坡RPA」</strong>
+            <span>获取定影最新版本与实用工具</span>
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="/brand/qr-wechat.png" alt="作者微信二维码" loading="lazy" width="180" height="180" />
+          <figcaption>
+            <strong>加作者微信</strong>
+            <span>发送暗号「OnceGlance」进专属交流群</span>
+          </figcaption>
+        </figure>
+        <figure>
+          <img src="/brand/qr-donate.png" alt="支持作者二维码" loading="lazy" width="180" height="180" />
+          <figcaption>
+            <strong>随喜支持</strong>
+            <span>请作者喝杯咖啡，自愿打赏</span>
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    document.querySelectorAll('.copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.getAttribute('data-copy') ?? '');
+          const prev = btn.textContent;
+          btn.textContent = '已复制';
+          setTimeout(() => (btn.textContent = prev), 1600);
+        } catch {
+          /* 剪贴板不可用时静默，用户可手动选中文本复制 */
+        }
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  /* ===== 首屏 ===== */
+  .hero {
+    padding: 88px 0 96px;
+    background:
+      radial-gradient(1200px 480px at 50% -160px, var(--accent-bg) 0%, transparent 62%),
+      var(--bg-primary);
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: clamp(34px, 5.4vw, 54px);
+    letter-spacing: 0.015em;
+    margin-bottom: 22px;
+  }
+
+  .hero-sub {
+    max-width: 620px;
+    margin: 0 auto 30px;
+    color: var(--text-secondary);
+    font-size: 17px;
+  }
+
+  .hero-cta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .install-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 460px;
+    padding: 9px 10px 9px 16px;
+    background: var(--ov-surface);
+    border: 1px solid var(--ov-surface-2);
+    border-radius: var(--radius-btn);
+  }
+
+  .install-chip code {
+    color: var(--ov-fg-dim);
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .copy-btn {
+    flex-shrink: 0;
+    padding: 4px 12px;
+    background: var(--ov-surface-2);
+    color: var(--ov-fg);
+    border: 1px solid var(--ov-border);
+    border-radius: 6px;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+
+  .copy-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .hero-meta {
+    font-size: 13px;
+    color: var(--text-tertiary);
+  }
+
+  @media (max-width: 720px) {
+    .hero-cta {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .install-chip {
+      max-width: 100%;
+    }
+  }
+
+  /* —— 取景层视觉 —— */
+  .viewfinder {
+    max-width: 920px;
+    margin: 56px auto 0;
+    background: var(--ov-bg);
+    border-radius: 16px;
+    padding: 40px 44px 30px;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(28, 28, 30, 0.22);
+  }
+
+  .dim-tag {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--ov-fg-dim);
+    background: var(--ov-surface);
+    border: 1px solid var(--ov-border);
+    border-radius: 6px;
+    padding: 3px 12px;
+    margin-bottom: 18px;
+  }
+
+  .selection {
+    position: relative;
+    display: inline-block;
+    border: 1.5px solid var(--accent);
+    border-radius: 2px;
+    line-height: 0;
+  }
+
+  .selection img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .handle {
+    position: absolute;
+    width: 9px;
+    height: 9px;
+    background: #fff;
+    border: 1.5px solid var(--accent);
+    border-radius: 1px;
+  }
+
+  .handle.tl { top: -6px; left: -6px; }
+  .handle.tr { top: -6px; right: -6px; }
+  .handle.bl { bottom: -6px; left: -6px; }
+  .handle.br { bottom: -6px; right: -6px; }
+
+  .action-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 22px;
+    padding: 6px;
+    background: var(--ov-surface);
+    border: 1px solid var(--ov-border);
+    border-radius: 10px;
+  }
+
+  .ab {
+    padding: 5px 16px;
+    border-radius: 7px;
+    font-size: 13px;
+    color: var(--ov-fg);
+    background: var(--ov-surface-2);
+  }
+
+  .ab.primary {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .esc {
+    font-size: 12.5px;
+    color: var(--ov-fg-dim);
+    padding: 0 8px;
+  }
+
+  /* ===== 三分钟上手 ===== */
+  .quickstart {
+    background: var(--bg-secondary);
+  }
+
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+    counter-reset: step;
+  }
+
+  .steps li {
+    position: relative;
+    padding-top: 44px;
+  }
+
+  .step-no {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .steps p {
+    font-size: 15px;
+    color: var(--text-primary);
+  }
+
+  .qs-more {
+    margin-top: 36px;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+  }
+
+  .qs-more a {
+    color: var(--accent-text);
+  }
+
+  @media (max-width: 900px) {
+    .steps {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .steps {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+  }
+
+  /* ===== 核心功能 ===== */
+  .bento {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+  }
+
+  .cell {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 26px 26px 24px;
+    grid-column: span 2;
+    background: var(--bg-primary);
+  }
+
+  .cell.wide {
+    grid-column: span 3;
+  }
+
+  .cell.full {
+    grid-column: span 6;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 32px;
+    align-items: center;
+  }
+
+  .cell h3 {
+    font-size: 17px;
+    margin-bottom: 8px;
+  }
+
+  .cell p {
+    font-size: 14.5px;
+    color: var(--text-secondary);
+  }
+
+  .cell img {
+    margin-top: 18px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: block;
+  }
+
+  .search-chips {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .search-chips code {
+    padding: 5px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-primary);
+  }
+
+  @media (max-width: 900px) {
+    .cell,
+    .cell.wide {
+      grid-column: span 3;
+    }
+
+    .cell.full {
+      grid-column: span 6;
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .cell,
+    .cell.wide,
+    .cell.full {
+      grid-column: span 6;
+    }
+  }
+
+  /* ===== Agent（暗取景） ===== */
+  .agent {
+    background: var(--ov-bg);
+    color: var(--ov-fg);
+  }
+
+  .agent .section-head h2,
+  .agent h2 {
+    color: var(--ov-fg);
+  }
+
+  .agent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .agent .lead {
+    font-size: 16px;
+    color: var(--ov-fg-dim);
+    margin-bottom: 28px;
+    max-width: 460px;
+  }
+
+  .agent-points {
+    list-style: none;
+    margin: 0 0 28px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .agent-points li {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-left: 16px;
+    border-left: 2px solid var(--accent);
+  }
+
+  .agent-points strong {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .agent-points span {
+    font-size: 13.5px;
+    color: var(--ov-fg-dim);
+  }
+
+  .mcp-chips {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 22px;
+  }
+
+  .mcp-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--ov-fg-dim);
+    border: 1px solid var(--ov-border);
+    border-radius: 4px;
+    padding: 2px 7px;
+  }
+
+  .mcp-chips code {
+    font-size: 12.5px;
+    color: var(--ov-fg);
+    background: var(--ov-surface);
+    border: 1px solid var(--ov-border);
+    border-radius: 6px;
+    padding: 4px 10px;
+  }
+
+  .agent-link {
+    color: var(--ov-fg);
+    font-size: 15px;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 5px;
+  }
+
+  .agent-link:hover {
+    color: #fff;
+  }
+
+  .terminal {
+    background: var(--ov-surface);
+    border: 1px solid var(--ov-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .term-bar {
+    padding: 10px 16px;
+    font-size: 12.5px;
+    color: var(--ov-fg-dim);
+    background: var(--ov-surface-2);
+    border-bottom: 1px solid var(--ov-border);
+    font-family: var(--font-mono);
+  }
+
+  .term-body {
+    margin: 0;
+    padding: 20px 20px 24px;
+    font-family: var(--font-mono);
+    font-size: 12.8px;
+    line-height: 1.9;
+    color: var(--ov-fg);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .term-body::-webkit-scrollbar {
+    display: none;
+  }
+
+  .t-dim { color: var(--ov-fg-dim); }
+  .t-key { color: #7cc4ff; }
+  .t-str { color: #ffc86b; }
+
+  .agent-note {
+    margin-top: 36px;
+    font-size: 13px;
+    color: var(--ov-fg-dim);
+    border-top: 1px solid var(--ov-border);
+    padding-top: 18px;
+  }
+
+  @media (max-width: 900px) {
+    .agent-grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+  }
+
+  /* ===== 隐私 ===== */
+  .privacy {
+    background: var(--bg-primary);
+  }
+
+  .privacy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  .zero-chips {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .zero {
+    padding: 9px 18px;
+    border: 1.5px solid var(--accent);
+    color: var(--accent-text);
+    border-radius: 999px;
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  .defense {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .defense li {
+    display: grid;
+    grid-template-columns: 170px 1fr;
+    gap: 4px 20px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: baseline;
+  }
+
+  .defense li:first-child {
+    border-top: 1px solid var(--border);
+  }
+
+  .defense strong {
+    font-size: 15px;
+  }
+
+  .defense span {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 900px) {
+    .privacy-grid {
+      grid-template-columns: 1fr;
+      gap: 36px;
+    }
+
+    .defense li {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ===== FAQ ===== */
+  .faq {
+    background: var(--bg-secondary);
+  }
+
+  .container-narrow {
+    max-width: 760px;
+  }
+
+  .faq-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    margin-bottom: 12px;
+    padding: 0 22px;
+  }
+
+  .faq-item summary {
+    cursor: pointer;
+    font-size: 15.5px;
+    font-weight: 500;
+    padding: 18px 0;
+    list-style: none;
+    position: relative;
+    padding-right: 32px;
+  }
+
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .faq-item summary::after {
+    content: '+';
+    position: absolute;
+    right: 2px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    color: var(--text-tertiary);
+    font-weight: 400;
+  }
+
+  .faq-item[open] summary::after {
+    content: '−';
+  }
+
+  .faq-item p {
+    padding: 0 0 18px;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+  }
+
+  /* ===== CTA ===== */
+  .qr-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 860px;
+  }
+
+  .qr-row figure {
+    margin: 0;
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    padding: 28px 20px 24px;
+  }
+
+  .qr-row img {
+    width: 168px;
+    height: 168px;
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto 16px;
+  }
+
+  .qr-row figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .qr-row strong {
+    font-size: 14.5px;
+  }
+
+  .qr-row span {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 720px) {
+    .qr-row {
+      grid-template-columns: 1fr;
+      max-width: 320px;
+    }
+  }
+</style>

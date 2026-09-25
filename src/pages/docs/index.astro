@@ -1,0 +1,225 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { chapterBadge } from '../../lib/chapter';
+
+const chapters = (await getCollection('docs')).sort((a, b) => a.data.order - b.data.order);
+
+const paths = [
+  { who: '只想截图', what: '读完下面的「三分钟快速开始」就够了' },
+  { who: '想用得顺手', what: '按顺序读 01–06，约 20 分钟' },
+  { who: '想让 AI 干活', what: '直接跳「08 接入 AI Agent」，WorkBuddy 用户三步搞定' },
+];
+---
+
+<BaseLayout
+  title="定影官方使用教程 · OnceGlance"
+  description="会截图，更能帮你看屏、取字、做图的 AI 截图工具。三分钟上手：安装、截图、标注、长截图、贴图、取字，再到接入 AI Agent。"
+>
+  <div class="container docs-index">
+    <header class="idx-hero">
+      <h1>定影官方使用教程</h1>
+      <p class="idx-sub">会截图，更能帮你看屏、取字、做图的 AI 截图工具。</p>
+      <blockquote class="idx-note">
+        这本教程——包括全部文字、截图、图上的红框序号标注、乃至排版——由一个 AI Agent
+        通过定影全自动完成：Agent 用 <code>once capture</code> 拍下每一步的真实界面，用
+        <code>once ocr</code> 读出界面文字与坐标，用 <code>once annotate</code>
+        在精确位置画上标注。这本教程本身，就是定影「让 AI
+        看懂屏幕」能力的完整效果展示。
+      </blockquote>
+    </header>
+
+    <section class="idx-quick">
+      <h2>三分钟快速开始</h2>
+      <p>装好客户端后，你只需要记住一个键：</p>
+      <ol class="idx-steps">
+        <li>按 <span class="kbd">Alt+Shift+A</span>——屏幕定格、变暗；</li>
+        <li>在想要的位置按下鼠标左键，拖出一个框，松手；</li>
+        <li>按 <span class="kbd">Enter</span>——截图已经复制到剪贴板；</li>
+        <li>到微信、Word 或任何输入框里按 <span class="kbd">Ctrl+V</span>——完成。</li>
+      </ol>
+      <p class="idx-congrats">恭喜，你已经会用定影了。剩下的都是让这件事变得更快、更好看、更自动的技巧。</p>
+    </section>
+
+    <section class="idx-toc">
+      <h2>教程目录</h2>
+      <div class="toc-grid">
+        {
+          chapters.map((ch) => (
+            <a class="toc-card" href={`/docs/${ch.id}`}>
+              <span class="toc-no" aria-hidden="true">
+                {chapterBadge(ch.data.order)}
+              </span>
+              <span class="toc-body">
+                <span class="toc-title">{ch.data.title}</span>
+                <span class="toc-desc">{ch.data.description}</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="idx-paths">
+      <h2>阅读路径</h2>
+      <ul>
+        {
+          paths.map(({ who, what }) => (
+            <li>
+              <strong>{who}</strong>：{what}
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="idx-help">
+      <h2>获取帮助与交流</h2>
+      <ul>
+        <li>关注公众号「阿坡RPA」获取定影最新版本与实用工具；</li>
+        <li>加作者微信，发送暗号「OnceGlance」进专属交流群；</li>
+        <li>二维码见<a href="/#关注与交流">官网首页「关注与交流」</a>。</li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .docs-index {
+    max-width: 860px;
+    padding-top: 56px;
+    padding-bottom: 96px;
+  }
+
+  .idx-hero h1 {
+    font-size: clamp(30px, 4vw, 42px);
+    margin-bottom: 12px;
+  }
+
+  .idx-sub {
+    font-size: 17px;
+    color: var(--text-secondary);
+    margin-bottom: 22px;
+  }
+
+  .idx-note {
+    margin: 0;
+    padding: 16px 20px;
+    background: var(--accent-bg);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 10px 10px 0;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+  }
+
+  .idx-note code {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1px 6px;
+    font-size: 0.86em;
+  }
+
+  section {
+    margin-top: 52px;
+  }
+
+  h2 {
+    font-size: 21px;
+    margin-bottom: 14px;
+  }
+
+  .idx-quick > p {
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  .idx-steps {
+    margin: 0 0 12px;
+    padding-left: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .idx-congrats {
+    font-size: 14.5px;
+    color: var(--text-tertiary);
+  }
+
+  .toc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .toc-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .toc-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 16px rgba(28, 28, 30, 0.06);
+  }
+
+  .toc-no {
+    flex-shrink: 0;
+    min-width: 30px;
+    height: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-text);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    margin-top: 2px;
+  }
+
+  .toc-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .toc-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .toc-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .idx-paths ul,
+  .idx-help ul {
+    margin: 0;
+    padding-left: 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 15px;
+    color: var(--text-secondary);
+  }
+
+  .idx-help a {
+    color: var(--accent-text);
+  }
+
+  @media (max-width: 720px) {
+    .toc-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

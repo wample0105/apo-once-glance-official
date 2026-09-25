@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="页面不存在 · 定影 OnceGlance"
+  description="你访问的页面不存在"
+>
+  <section class="nf">
+    <div class="nf-box">
+      <p class="nf-code">404</p>
+      <h1>这一帧没有内容</h1>
+      <p class="nf-sub">你访问的页面不存在或已移动。</p>
+      <div class="nf-actions">
+        <a class="btn btn-primary" href="/">回到首页</a>
+        <a class="btn btn-ghost" href="/docs">查看教程</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    min-height: 62vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    background: var(--ov-bg);
+  }
+
+  .nf-box {
+    text-align: center;
+    color: var(--ov-fg);
+  }
+
+  .nf-code {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    color: var(--ov-fg-dim);
+    border: 1px solid var(--ov-border);
+    border-radius: 6px;
+    display: inline-block;
+    padding: 2px 14px;
+    margin-bottom: 18px;
+    background: var(--ov-surface);
+  }
+
+  h1 {
+    font-size: clamp(26px, 4vw, 36px);
+    margin-bottom: 10px;
+  }
+
+  .nf-sub {
+    color: var(--ov-fg-dim);
+    margin-bottom: 28px;
+  }
+
+  .nf-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+</style>

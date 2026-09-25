@@ -1,0 +1,167 @@
+---
+import GitHubIcon from './GitHubIcon.astro';
+
+const REPO = 'https://github.com/wample0105/apo-once-glance';
+const path = Astro.url.pathname;
+
+const links = [
+  { href: '/#features', label: '功能' },
+  { href: '/#agent', label: 'Agent' },
+  { href: '/#privacy', label: '隐私' },
+  { href: '/docs', label: '文档' },
+];
+
+const isActive = (href: string) => {
+  if (href.startsWith('/#')) return false;
+  return path === href || path.startsWith(href + '/');
+};
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="/" aria-label="定影 OnceGlance 首页">
+      <img src="/brand/appicon-512.png" alt="" width="26" height="26" />
+      <span class="brand-name">定影</span>
+      <span class="brand-en">OnceGlance</span>
+    </a>
+
+    <nav class="nav" aria-label="主导航">
+      {
+        links.map(({ href, label }) => (
+          <a class:list={['nav-link', { active: isActive(href) }]} href={href}>
+            {label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="header-actions">
+      <a
+        class="gh-link"
+        href={REPO}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub 仓库（新窗口打开）"
+        title="GitHub 仓库"
+      >
+        <GitHubIcon size={21} />
+      </a>
+      <a class="btn btn-primary btn-sm dl-btn" href="/download">下载</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    height: 60px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .brand img {
+    border-radius: 6px;
+    display: block;
+  }
+
+  .brand-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .brand-en {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.02em;
+    margin-top: 2px;
+  }
+
+  .nav {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+  }
+
+  .nav-link {
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 14.5px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+  }
+
+  .nav-link.active {
+    color: var(--accent-text);
+    background: var(--accent-bg);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+
+  .gh-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .gh-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-secondary);
+  }
+
+  .dl-btn {
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 760px) {
+    .header-inner {
+      gap: 12px;
+    }
+
+    .brand-en {
+      display: none;
+    }
+
+    .nav {
+      display: none;
+    }
+
+    .header-actions {
+      margin-left: auto;
+    }
+  }
+</style>
